@@ -67,7 +67,13 @@ storage.Write("MyByte", (byte)1);
 
 // Likewise, all native C# types are available to read.
 
-var a = storage.ReadInt("MyInt");
+int a = -1;
+
+if(storage.VarExists("MyInt")) // Make sure the variable exists before reading.
+{
+     a = storage.ReadInt("MyInt");
+}
+
 var b = storage.ReadByte("MyByte");
 
 // You can save your data.
