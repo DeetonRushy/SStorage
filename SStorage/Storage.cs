@@ -574,7 +574,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadByte doesn't exist.");
             }
 
             byte result = 0x0;
@@ -616,7 +616,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadString doesn't exist.");
             }
 
             string result = string.Empty;
@@ -658,7 +658,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadChar doesn't exist.");
             }
 
             char result = char.MinValue;
@@ -700,7 +700,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadDecimal doesn't exist.");
             }
 
             decimal result = decimal.Zero;
@@ -742,7 +742,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadDouble doesn't exist.");
             }
 
             double result = double.NaN;
@@ -784,7 +784,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadShort doesn't exist.");
             }
 
             short result = short.MinValue;
@@ -826,7 +826,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadInt doesn't exist.");
             }
 
             int result = int.MinValue;
@@ -868,7 +868,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadLong doesn't exist.");
             }
 
             long result = long.MinValue;
@@ -910,7 +910,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadSByte doesn't exist.");
             }
 
             sbyte result = sbyte.MinValue;
@@ -952,7 +952,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadFloat doesn't exist.");
             }
 
             float result = float.NaN;
@@ -994,7 +994,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadUShort doesn't exist.");
             }
 
             ushort result = ushort.MinValue;
@@ -1036,7 +1036,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadUInt doesn't exist.");
             }
 
             uint result = uint.MinValue;
@@ -1078,7 +1078,7 @@ namespace Storage
         {
             if (!PositionTable.ContainsKey(Name))
             {
-                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadBool doesn't exist.");
+                throw new ArgumentException("Specified identifier '" + Name + "' passed into ReadULong doesn't exist.");
             }
 
             ulong result = ulong.MinValue;
@@ -1134,7 +1134,7 @@ namespace Storage
 
             if (!File.Exists(path))
             {
-                if (path.Contains("."))
+                if (path.Contains('.'))
                 {
                     File.Create(path).Dispose();
                 }
@@ -1156,11 +1156,13 @@ namespace Storage
                 throw new ArgumentException($"The specified file doesn't exist. {path}");
             }
 
-            PositionTable = JsonConvert.DeserializeObject<Dictionary<string, long>>(File.ReadAllText(path));
+
+            var data = File.ReadAllText(path);
+
+            PositionTable = JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
             UpdateIndex();
         }
 
         #endregion
     }
 }
-
