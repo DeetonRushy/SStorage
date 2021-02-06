@@ -79,4 +79,5 @@ new_storage.Load("saved.json");
 
 ## Upcoming features
 
-**Encoding**: SStorage will soon support storing the data with a specific encoding.
+- [x] **Encoding**: SStorage will soon support storing the data with a specific encoding.
+- [ ] **Speeds** : Writing speeds are slightly slower that read speeds. The plan is to reduce these speeds by at least 15ms.
