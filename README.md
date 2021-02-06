@@ -53,12 +53,11 @@ We can then save the dictionary into Json format using [Newtonsoft.Json](https:/
 
 ## Full Usage
 
-```cs 
+```cs
+// Fully initialized object, no need for constructors etc.
+// You can currently access every constructor with the HelperFactory.
 
-// Params:
-// FileName - Set a specific name for the data file. -- optional
-// debug - If enabled, the library will throw exceptions on non-fatal errors. -- optional
-Storage storage = new Storage("storage.dat", true);
+IStorage storage = HelperFactory.SStorageWithPathDbg("storage.dat");
 
 // All native C# types are supported with Write
 storage.Write("MyInt", (int)1);
@@ -79,4 +78,6 @@ new_storage.Load("saved.json");
 
 ## Upcoming features
 
-**Encoding**: SStorage will soon support storing the data with a specific encoding.
+- [x] Encoding: SStorage will soon support storing the data with a specific encoding.
+- [x] Interfaces: SStorage now uses a factory to pass back IStorage types. This makes using this library have much less burden on your code.
+- [ ] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
