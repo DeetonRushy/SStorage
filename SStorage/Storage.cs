@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Storage
 {
@@ -13,33 +15,64 @@ namespace Storage
     // We will need to make it a template and work out what type of
     // data type they are reading.
 
-    class Storage
+    class Storage : IDisposable
     {
+        /// <summary>
+        /// The current data file.
+        /// </summary>
         public string FileName { get; private set; }
 
+        /// <summary>
+        /// The table that keeps track of all variable file positions.
+        /// </summary>
         private IDictionary<string, long> PositionTable { get; set; }
 
+        /// <summary>
+        /// Current stream end-index.
+        /// </summary>
         private long Position { get; set; }
 
+        /// <summary>
+        /// Debug enabled.
+        /// </summary>
         private bool Debug { get; set; }
+
+        private Encoding StreamEncoder { get; set; }
 
         #region Utility
 
+        /// <summary>
+        /// Makes sure a file exists, if it doesn't it will be created automatically.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
         private void CheckFileExistsOrCreate(string path)
         {
             if (!File.Exists(path))
             {
-                FileStream temp = File.Create(path);
+                FileStream temp = null;
+
+                try
+                {
+                    temp = File.Create(path);
+                }
+                catch
+                {
+                    throw new IOException("You tried to set a data file to '" + path + "' does this directory exist?");
+                }
+
                 temp.Close();
                 temp.Dispose();
             }
         }
 
+        /// <summary>
+        /// Updates the current index, primarily used when loading data.
+        /// </summary>
         public void UpdateIndex()
         {
             long temp = 0;
 
-            foreach (KeyValuePair<string, long> kv in PositionTable)
+            foreach(KeyValuePair<string, long> kv in PositionTable)
             {
                 temp = kv.Value; // The dictionary is iterated upwards, so the final value will contain the Position we want
             }
@@ -53,6 +86,42 @@ namespace Storage
             Position = temp - 8;
         }
 
+        /// <summary>
+        /// Destroys everything in memory & writes all contents from the stream into the file.
+        /// </summary>
+        public void EraseAndFlush()
+        {
+            string[] names = { };
+
+            foreach(KeyValuePair<string, long> kv in PositionTable)
+            {
+                names.Append(kv.Key);
+            }
+
+            foreach(string key in names)
+            {
+                PositionTable.Remove(key);
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open)))
+            {
+                writer.BaseStream.Position = Position;
+                writer.Flush();
+            }
+        }
+
+        public void Dispose()
+        {
+            PositionTable.Clear();
+        }
+
+        /// <summary>
+        /// Allows you to see if a variable exists.
+        /// </summary>
+        /// <param name="name">The name the variable was assigned.</param>
+        /// <returns>True if the variable does exist. Otherwise false.</returns>
+        public bool VarExists(string name) => PositionTable.ContainsKey(name);
+
         #endregion
 
         #region Constructors
@@ -61,11 +130,12 @@ namespace Storage
         /// Creates a storage instance with the default file name as 'storage.dat'
         /// </summary>
         /// <param name="debug">If true, Storage will throw exceptions on non-fatal errors for debugging. Otherwise, it will not.</param>
-        public Storage(bool debug = false)
+        public Storage(bool debug=false)
         {
             FileName = "storage.dat";
             CheckFileExistsOrCreate(FileName);
 
+            StreamEncoder = Encoding.ASCII;
             PositionTable = new Dictionary<string, long>();
             Position = 0;
             Debug = debug;
@@ -76,11 +146,23 @@ namespace Storage
         /// </summary>
         /// <param name="fileName">The file name to save the data into, can be a folder if it exists.</param>
         /// <param name="debug">If true, Storage will throw exceptions on non-fatal errors for debugging. Otherwise, it will not.</param>
-        public Storage(string fileName, bool debug = false)
+        public Storage(string fileName, bool debug=false)
         {
             FileName = fileName;
             CheckFileExistsOrCreate(FileName);
 
+            StreamEncoder = Encoding.ASCII;
+            PositionTable = new Dictionary<string, long>();
+            Position = 0;
+            Debug = debug;
+        }
+
+        public Storage(string fileName, Encoding encoding, bool debug=false)
+        {
+            FileName = fileName;
+            CheckFileExistsOrCreate(fileName);
+
+            StreamEncoder = encoding;
             PositionTable = new Dictionary<string, long>();
             Position = 0;
             Debug = debug;
@@ -108,7 +190,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using(BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -141,7 +223,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -174,7 +256,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -207,7 +289,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -240,7 +322,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -273,7 +355,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -306,7 +388,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -339,7 +421,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -372,7 +454,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -405,7 +487,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -438,7 +520,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -471,7 +553,7 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -504,14 +586,14 @@ namespace Storage
                 return false;
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open))) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
                 var _temp = writer.BaseStream.Position; // Get the position before we write the value, so we can set it in the dictionary.
                 writer.Write(value); // Write the value.
 
-                Position += value.Length + 1; // 1 char = 1 byte, just the length.
+                Position += value.Length+1; // 1 char = 1 byte, just the length.
 
                 PositionTable.Add(Name, _temp);
             }
@@ -537,7 +619,7 @@ namespace Storage
 
             bool result = false;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using(BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -545,17 +627,17 @@ namespace Storage
                 {
                     result = reader.ReadBoolean();
                 }
-                catch (EndOfStreamException)
+                catch(EndOfStreamException)
                 {
                     throw new Exception("There was an error reading the value '" + Name + "', we reached the end of the stream." +
                         " If you have this error, please contact https://github.com/DeetonRushy.");
                 }
-                catch (ObjectDisposedException)
+                catch(ObjectDisposedException)
                 {
                     throw new Exception("The reader object was disposed mid-operation. " +
                         " If you have this error, please contact https://github.com/DeetonRushy.");
                 }
-                catch (IOException err)
+                catch(IOException err)
                 {
                     throw new IOException("While trying to read the value '" + Name + "' an IOException occured. Does the file '" +
                         FileName + "' still exist? Extra Info: " + err.Message);
@@ -579,7 +661,7 @@ namespace Storage
 
             byte result = 0x0;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -621,7 +703,7 @@ namespace Storage
 
             string result = string.Empty;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -663,7 +745,7 @@ namespace Storage
 
             char result = char.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -705,7 +787,7 @@ namespace Storage
 
             decimal result = decimal.Zero;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -747,7 +829,7 @@ namespace Storage
 
             double result = double.NaN;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -789,7 +871,7 @@ namespace Storage
 
             short result = short.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -831,7 +913,7 @@ namespace Storage
 
             int result = int.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -873,7 +955,7 @@ namespace Storage
 
             long result = long.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -915,7 +997,7 @@ namespace Storage
 
             sbyte result = sbyte.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -957,7 +1039,7 @@ namespace Storage
 
             float result = float.NaN;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -999,7 +1081,7 @@ namespace Storage
 
             ushort result = ushort.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -1041,7 +1123,7 @@ namespace Storage
 
             uint result = uint.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -1083,7 +1165,7 @@ namespace Storage
 
             ulong result = ulong.MinValue;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -1149,6 +1231,8 @@ namespace Storage
         /// <param name="path">The path you used with the Save method.</param>
         public void Load(string path)
         {
+            EraseAndFlush(); // Make sure any current data we have isn't forgotten.
+
             if (!File.Exists(path))
             {
                 // The passed file doesn't exist, not good so let them know with an exception. 
