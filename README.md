@@ -6,7 +6,7 @@ This is a simple `C#` library that allows you save data in a binary format.
 
 *Write*: You can write any data type to disk at runtime with any name you want.
 ```cs
-Storage storage = new Storage();
+IStorage storage = HelperFactory.SStorage();
 
 storage.Write("Title", "MyAwesomeApp");
 storage.Write("Height", 800);
@@ -17,7 +17,7 @@ storage.Write("Height", 800);
 
 *Read*: You can read any data type from the name you assigned it when writing it.
 ```cs
-Storage storage = new Storage();
+IStorage storage = HelperFactory.SStorage();
 
 storage.Write("Username", "DeetonRushy");
 
