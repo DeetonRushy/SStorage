@@ -56,8 +56,8 @@ We can then save the dictionary into Json format using [Newtonsoft.Json](https:/
 ```cs 
 
 // Params:
-FileName - Set a specific name for the data file. -- optional
-debug - If enabled, the library will throw exceptions on non-fatal errors. -- optional
+// FileName - Set a specific name for the data file. -- optional
+// debug - If enabled, the library will throw exceptions on non-fatal errors. -- optional
 Storage storage = new Storage("storage.dat", true);
 
 // All native C# types are supported with Write
