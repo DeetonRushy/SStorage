@@ -64,7 +64,7 @@ Storage storage = new Storage("storage.dat", true);
 storage.Write("MyInt", (int)1);
 storage.Write("MyByte", (byte)1);
 
-// Likewise, all native C# types are support to read.
+// Likewise, all native C# types are available to read.
 
 var a = storage.ReadInt("MyInt");
 var b = storage.ReadByte("MyByte");
