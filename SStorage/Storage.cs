@@ -7,6 +7,139 @@ using System.Text;
 
 namespace Storage
 {
+    //* Storage.Utils
+
+    // Contains classes that provide utility functionality
+    // that can help and assist in keeping code tidy & readable
+    // while working with SStorage.
+
+    namespace Utils
+    {
+        public interface IStorage
+        {
+            string FileName { get; set; }
+
+            IDictionary<string, long> PositionTable { get; set; }
+
+            long Position { get; set; }
+
+            bool Debug { get; set; }
+
+            Encoding StreamEncoder { get; set; }
+
+            void CheckFileExistsOrCreate(string path);
+
+            void UpdateIndex();
+
+            void EraseAndFlush();
+
+            bool VarExists(string name);
+
+            #region Write
+
+            bool Write(string Name, bool value);
+
+            bool Write(string Name, byte value);
+
+            bool Write(string Name, char value);
+
+            bool Write(string Name, decimal value);
+
+            bool Write(string Name, double value);
+
+            bool Write(string Name, short value);
+
+            bool Write(string Name, long value);
+
+            bool Write(string Name, sbyte value);
+
+            bool Write(string Name, float value);
+
+            bool Write(string Name, ushort value);
+
+            bool Write(string Name, uint value);
+
+            bool Write(string Name, ulong value);
+
+            bool Write(string Name, string value);
+
+            #endregion
+
+            #region Read
+
+            bool ReadBool(string Name);
+
+            byte ReadByte(string Name);
+
+            string ReadString(string Name);
+
+            char ReadChar(string Name);
+
+            decimal ReadDecimal(string Name);
+
+            double ReadDouble(string Name);
+
+            short ReadShort(string Name);
+
+            int ReadInt(string Name);
+
+            long ReadLong(string Name);
+
+            sbyte ReadSByte(string Name);
+
+            float ReadFloat(string Name);
+
+            ushort ReadUShort(string Name);
+
+            uint ReadUInt(string Name);
+
+            ulong ReadULong(string Name);
+
+            #endregion
+
+            void Save(string path);
+
+            void Load(string path);
+        }
+
+        class HelperFactory
+        {
+            public static IStorage SStorageWithPath(string path) => new Storage(path);
+
+            public static IStorage SStorage() => new Storage();
+
+            public static IStorage SStorageDbg() => new Storage(true);
+
+            public static IStorage SStorageWithPathDbg(string path) => new Storage(path, true);
+
+            public static IStorage SStorageWithPathAndEncoding(string path, Encoding encoder) => new Storage(path, encoder);
+
+            public static IStorage SStorageWithPathAndEncodingDbg(string path, Encoding encoder) => new Storage(path, encoder, true);
+        }
+
+        public class IO
+        {
+            #region Static
+
+            public static void CreateFileInNewFolder(string folder, string file_name)
+            {
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                if (!File.Exists(folder + "\\" + file_name))
+                {
+                    FileStream temp = File.Create(folder + "\\" + file_name);
+                    temp.Close();
+                    temp.Dispose();
+                }
+            }
+
+            #endregion
+        }
+    }
+
     // If we store the data's starting position in the dictionary,
     // we can set the streams context to there and read the value.
     // This could allow us to have binary data in a file that we can
@@ -15,29 +148,32 @@ namespace Storage
     // We will need to make it a template and work out what type of
     // data type they are reading.
 
-    class Storage : IDisposable
+    /// <summary>
+    /// Main SStorage object.
+    /// </summary>
+    class Storage : IDisposable, Utils.IStorage
     {
         /// <summary>
         /// The current data file.
         /// </summary>
-        public string FileName { get; private set; }
+        public string FileName { get; set; }
 
         /// <summary>
         /// The table that keeps track of all variable file positions.
         /// </summary>
-        private IDictionary<string, long> PositionTable { get; set; }
+        public IDictionary<string, long> PositionTable { get; set; }
 
         /// <summary>
         /// Current stream end-index.
         /// </summary>
-        private long Position { get; set; }
+        public long Position { get; set; }
 
         /// <summary>
         /// Debug enabled.
         /// </summary>
-        private bool Debug { get; set; }
+        public bool Debug { get; set; }
 
-        private Encoding StreamEncoder { get; set; }
+        public Encoding StreamEncoder { get; set; }
 
         #region Utility
 
@@ -45,7 +181,7 @@ namespace Storage
         /// Makes sure a file exists, if it doesn't it will be created automatically.
         /// </summary>
         /// <param name="path">The path to the file.</param>
-        private void CheckFileExistsOrCreate(string path)
+        public void CheckFileExistsOrCreate(string path)
         {
             if (!File.Exists(path))
             {
@@ -72,7 +208,7 @@ namespace Storage
         {
             long temp = 0;
 
-            foreach(KeyValuePair<string, long> kv in PositionTable)
+            foreach (KeyValuePair<string, long> kv in PositionTable)
             {
                 temp = kv.Value; // The dictionary is iterated upwards, so the final value will contain the Position we want
             }
@@ -93,12 +229,12 @@ namespace Storage
         {
             string[] names = { };
 
-            foreach(KeyValuePair<string, long> kv in PositionTable)
+            foreach (KeyValuePair<string, long> kv in PositionTable)
             {
                 names.Append(kv.Key);
             }
 
-            foreach(string key in names)
+            foreach (string key in names)
             {
                 PositionTable.Remove(key);
             }
@@ -130,7 +266,7 @@ namespace Storage
         /// Creates a storage instance with the default file name as 'storage.dat'
         /// </summary>
         /// <param name="debug">If true, Storage will throw exceptions on non-fatal errors for debugging. Otherwise, it will not.</param>
-        public Storage(bool debug=false)
+        public Storage(bool debug = false)
         {
             FileName = "storage.dat";
             CheckFileExistsOrCreate(FileName);
@@ -146,7 +282,7 @@ namespace Storage
         /// </summary>
         /// <param name="fileName">The file name to save the data into, can be a folder if it exists.</param>
         /// <param name="debug">If true, Storage will throw exceptions on non-fatal errors for debugging. Otherwise, it will not.</param>
-        public Storage(string fileName, bool debug=false)
+        public Storage(string fileName, bool debug = false)
         {
             FileName = fileName;
             CheckFileExistsOrCreate(FileName);
@@ -157,7 +293,7 @@ namespace Storage
             Debug = debug;
         }
 
-        public Storage(string fileName, Encoding encoding, bool debug=false)
+        public Storage(string fileName, Encoding encoding, bool debug = false)
         {
             FileName = fileName;
             CheckFileExistsOrCreate(fileName);
@@ -190,7 +326,7 @@ namespace Storage
                 return false;
             }
 
-            using(BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Open), StreamEncoder)) // Closes the writer for us, much easier.
             {
                 writer.BaseStream.Position = Position; // Set the position so we don't overwrite other data.
 
@@ -593,7 +729,7 @@ namespace Storage
                 var _temp = writer.BaseStream.Position; // Get the position before we write the value, so we can set it in the dictionary.
                 writer.Write(value); // Write the value.
 
-                Position += value.Length+1; // 1 char = 1 byte, just the length.
+                Position += value.Length + 1; // 1 char = 1 byte, just the length.
 
                 PositionTable.Add(Name, _temp);
             }
@@ -619,7 +755,7 @@ namespace Storage
 
             bool result = false;
 
-            using(BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
+            using (BinaryReader reader = new BinaryReader(File.Open(FileName, FileMode.Open), StreamEncoder))
             {
                 reader.BaseStream.Position = PositionTable[Name];
 
@@ -627,17 +763,17 @@ namespace Storage
                 {
                     result = reader.ReadBoolean();
                 }
-                catch(EndOfStreamException)
+                catch (EndOfStreamException)
                 {
                     throw new Exception("There was an error reading the value '" + Name + "', we reached the end of the stream." +
                         " If you have this error, please contact https://github.com/DeetonRushy.");
                 }
-                catch(ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                     throw new Exception("The reader object was disposed mid-operation. " +
                         " If you have this error, please contact https://github.com/DeetonRushy.");
                 }
-                catch(IOException err)
+                catch (IOException err)
                 {
                     throw new IOException("While trying to read the value '" + Name + "' an IOException occured. Does the file '" +
                         FileName + "' still exist? Extra Info: " + err.Message);
