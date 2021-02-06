@@ -17,88 +17,279 @@ namespace Storage
     {
         public interface IStorage
         {
+            /// <summary>
+            /// The name of the file holding the data.
+            /// </summary>
             string FileName { get; set; }
 
+            /// <summary>
+            /// The dictionary that contains variable name and stream positions.
+            /// </summary>
             IDictionary<string, long> PositionTable { get; set; }
 
+            /// <summary>
+            /// The current end position in the stream.
+            /// </summary>
             long Position { get; set; }
 
+            /// <summary>
+            /// Whether the class is running in debug mode.
+            /// </summary>
             bool Debug { get; set; }
 
+            /// <summary>
+            /// The current encoding being use for read&write.
+            /// </summary>
             Encoding StreamEncoder { get; set; }
 
+            /// <summary>
+            /// Deletes the current data file and creates a new file with the same name.
+            /// </summary>
+            void Reset();
+
+            /// <summary>
+            /// Creates a file if it doesn't already exist.
+            /// </summary>
+            /// <param name="path">The path to the file you want to be made.</param>
             void CheckFileExistsOrCreate(string path);
 
+            /// <summary>
+            /// Updates the Position variable to the most recent position. EXPENSIVE.
+            /// </summary>
             void UpdateIndex();
 
+            /// <summary>
+            /// Resets the position, all dictionary data. EXPENSIVE.
+            /// </summary>
             void EraseAndFlush();
 
+            /// <summary>
+            /// Allows you to see if a variable exists in the current context.
+            /// </summary>
+            /// <param name="name">The variable name.</param>
+            /// <returns>True if it exists. Otherwise false.</returns>
             bool VarExists(string name);
 
             #region Write
 
+            /// <summary>
+            /// Writes a boolean value to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. True or False.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, bool value);
 
+            /// <summary>
+            /// Writes a byte to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. 0-255.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, byte value);
 
+            /// <summary>
+            /// Writes a single char to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. Any value surrounded by ''.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, char value);
 
+            /// <summary>
+            /// Writes a decimal value to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, decimal value);
 
+            /// <summary>
+            /// Writes a single double to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, double value);
 
+            /// <summary>
+            /// Writes a single short to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. -32767 through 32767</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, short value);
 
+            /// <summary>
+            /// Writes a long to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, long value);
 
+            /// <summary>
+            /// Writes a single signed short to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, sbyte value);
 
+            /// <summary>
+            /// Writes a single floating point number to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, float value);
 
+            /// <summary>
+            /// Writes an unsigned short to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. 0 through 65535</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, ushort value);
 
+            /// <summary>
+            /// Writes an unsigned integer to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, uint value);
 
+            /// <summary>
+            /// Writes an unsigned long to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, ulong value);
 
+            /// <summary>
+            /// Writes a string to the data file in binary format.
+            /// </summary>
+            /// <param name="Name">The name you want to assign the value.</param>
+            /// <param name="value">The value itself. Any sized string.</param>
+            /// <returns>True if the operation completed successfully. False otherwise.</returns>
             bool Write(string Name, string value);
 
             #endregion
 
             #region Read
 
+            /// <summary>
+            /// Reads a Boolean value from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The boolean. Otherwise, an exception.</returns>
             bool ReadBool(string Name);
 
+            /// <summary>
+            /// Reads a Byte from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The byte. Otherwise, an exception.</returns>
             byte ReadByte(string Name);
 
+            /// <summary>
+            /// Reads a string from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The boolean. Otherwise, an exception.</returns>
             string ReadString(string Name);
 
+            /// <summary>
+            /// Reads a char from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The char. Otherwise, an exception.</returns>
             char ReadChar(string Name);
 
+            /// <summary>
+            /// Reads a decimal value from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The decimal. Otherwise, an exception.</returns>
             decimal ReadDecimal(string Name);
 
+            /// <summary>
+            /// Reads a double from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The double. Otherwise, an exception.</returns>
             double ReadDouble(string Name);
 
+            /// <summary>
+            /// Reads a short from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The short. Otherwise, an exception.</returns>
             short ReadShort(string Name);
 
+            /// <summary>
+            /// Reads an integer value from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The integer. Otherwise, an exception.</returns>
             int ReadInt(string Name);
 
+            /// <summary>
+            /// Reads a long from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The long. Otherwise, an exception.</returns>
             long ReadLong(string Name);
 
+            /// <summary>
+            /// Reads a signed byte from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The sbyte. Otherwise, an exception.</returns>
             sbyte ReadSByte(string Name);
 
+            /// <summary>
+            /// Reads a floating point value from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The float. Otherwise, an exception.</returns>
             float ReadFloat(string Name);
 
+            /// <summary>
+            /// Reads an unsigned short from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The ushort. Otherwise, an exception.</returns>
             ushort ReadUShort(string Name);
 
+            /// <summary>
+            /// Reads an unsigned integer from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The uint. Otherwise, an exception.</returns>
             uint ReadUInt(string Name);
 
+            /// <summary>
+            /// Reads an unsigned long from storage.
+            /// </summary>
+            /// <param name="Name">The name you assigned said value.</param>
+            /// <returns>The boolean. Otherwise, an exception.</returns>
             ulong ReadULong(string Name);
 
             #endregion
 
+            /// <summary>
+            /// Saves all session data into Json format. This can be re-loaded if the dat file & json are available.
+            /// </summary>
+            /// <param name="path">The path to the file we will save the data to. If it doesn't exist, it will be created.</param>
             void Save(string path);
 
+            /// <summary>
+            /// Loads previous data in to SStorage allowing the .dat file to be readable.
+            /// </summary>
+            /// <param name="path">The path to the file with the data. The file also passed as a parameter to Save.</param>
             void Load(string path);
         }
 
@@ -153,34 +344,18 @@ namespace Storage
     /// </summary>
     class Storage : IDisposable, Utils.IStorage
     {
-        /// <summary>
-        /// The current data file.
-        /// </summary>
         public string FileName { get; set; }
 
-        /// <summary>
-        /// The table that keeps track of all variable file positions.
-        /// </summary>
         public IDictionary<string, long> PositionTable { get; set; }
 
-        /// <summary>
-        /// Current stream end-index.
-        /// </summary>
         public long Position { get; set; }
 
-        /// <summary>
-        /// Debug enabled.
-        /// </summary>
         public bool Debug { get; set; }
 
         public Encoding StreamEncoder { get; set; }
 
         #region Utility
 
-        /// <summary>
-        /// Makes sure a file exists, if it doesn't it will be created automatically.
-        /// </summary>
-        /// <param name="path">The path to the file.</param>
         public void CheckFileExistsOrCreate(string path)
         {
             if (!File.Exists(path))
@@ -201,9 +376,6 @@ namespace Storage
             }
         }
 
-        /// <summary>
-        /// Updates the current index, primarily used when loading data.
-        /// </summary>
         public void UpdateIndex()
         {
             long temp = 0;
@@ -222,9 +394,6 @@ namespace Storage
             Position = temp - 8;
         }
 
-        /// <summary>
-        /// Destroys everything in memory & writes all contents from the stream into the file.
-        /// </summary>
         public void EraseAndFlush()
         {
             string[] names = { };
@@ -244,6 +413,20 @@ namespace Storage
                 writer.BaseStream.Position = Position;
                 writer.Flush();
             }
+
+            Position = 0;
+        }
+
+        public void Reset()
+        {
+            EraseAndFlush(); // Flush current stream & active data.
+
+            if (File.Exists(FileName))
+            {
+                File.Delete(FileName);
+            }
+
+            CheckFileExistsOrCreate(FileName);
         }
 
         public void Dispose()
@@ -251,11 +434,6 @@ namespace Storage
             PositionTable.Clear();
         }
 
-        /// <summary>
-        /// Allows you to see if a variable exists.
-        /// </summary>
-        /// <param name="name">The name the variable was assigned.</param>
-        /// <returns>True if the variable does exist. Otherwise false.</returns>
         public bool VarExists(string name) => PositionTable.ContainsKey(name);
 
         #endregion
@@ -308,12 +486,6 @@ namespace Storage
 
         #region Write
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, bool value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -341,12 +513,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, byte value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -374,12 +540,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, char value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -407,12 +567,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, decimal value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -440,12 +594,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, double value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -473,12 +621,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, short value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -506,12 +648,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, long value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -539,12 +675,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, sbyte value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -572,12 +702,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, float value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -605,12 +729,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, ushort value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -638,12 +756,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, uint value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -671,12 +783,6 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
         public bool Write(string Name, ulong value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -704,12 +810,7 @@ namespace Storage
             return PositionTable.ContainsKey(Name);
         }
 
-        /// <summary>
-        /// Writes data into the file.
-        /// </summary>
-        /// <param name="Name">The name of which you want to be able to access this value.</param>
-        /// <param name="value">The value to store.</param>
-        /// <returns>True if all went well. Otherwise false.</returns>
+
         public bool Write(string Name, string value)
         {
             if (PositionTable.ContainsKey(Name))
@@ -741,11 +842,7 @@ namespace Storage
 
         #region Read
 
-        /// <summary>
-        /// Reads a boolean from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The boolean. If an error occurs, an exception will be thrown.</returns>
+
         public bool ReadBool(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -783,11 +880,7 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a single byte from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The byte. Otherwise, an exception will be thrown.</returns>
+
         public byte ReadByte(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -825,11 +918,7 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a string from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The string. Otherwise, an exception will be thrown.</returns>
+
         public string ReadString(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -867,11 +956,7 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a single char from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The char. Otherwise, an exception will be thrown.</returns>
+
         public char ReadChar(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -909,11 +994,7 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a decimal value from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
+
         public decimal ReadDecimal(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -951,11 +1032,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a double from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public double ReadDouble(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -993,11 +1069,7 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a short from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
+
         public short ReadShort(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1035,11 +1107,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads an integer value from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public int ReadInt(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1077,11 +1144,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a 64bit integer value from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public long ReadLong(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1119,11 +1181,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a signed byte from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public sbyte ReadSByte(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1161,11 +1218,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads a floating point value from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public float ReadFloat(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1203,11 +1255,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads an unsigned short from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public ushort ReadUShort(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1245,11 +1292,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads an unsigned 32bit integer from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public uint ReadUInt(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1287,11 +1329,6 @@ namespace Storage
             return result;
         }
 
-        /// <summary>
-        /// Reads an unsigned 64bit integer from the data file.
-        /// </summary>
-        /// <param name="Name">The name which you assigned the variable to when writing it.</param>
-        /// <returns>The decimal value. Otherwise, an exception will be thrown.</returns>
         public ulong ReadULong(string Name)
         {
             if (!PositionTable.ContainsKey(Name))
@@ -1333,10 +1370,6 @@ namespace Storage
 
         #region ImportExport
 
-        /// <summary>
-        /// Saves the current positions & data. This allows you to load the exact same data with the same names after the program has been restarted.
-        /// </summary>
-        /// <param name="path">The path to the file, if it doesn't already exist it will be created.</param>
         public void Save(string path)
         {
             if (PositionTable.Count == 0)
@@ -1361,10 +1394,6 @@ namespace Storage
             File.WriteAllText(path, serialized);
         }
 
-        /// <summary>
-        /// Loads the saved data from the Json file & imports it. This allows you to use data previously saved.
-        /// </summary>
-        /// <param name="path">The path you used with the Save method.</param>
         public void Load(string path)
         {
             EraseAndFlush(); // Make sure any current data we have isn't forgotten.
