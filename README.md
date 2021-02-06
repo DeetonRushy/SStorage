@@ -45,7 +45,7 @@ private void OnLoad()
 ## How is the data 'loaded'?
 I may butcher this, so bear with me.
 
-The files are written to via  [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader?view=net-5.0) & [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader?view=net-5.0). These two classes allow you to access to underlying stream they are using. Therefore, we can access the Position we are at in the stream. The way this works is, on write we add the size, in bytes, to our class' private variable 'Position'. This way we can access the very end position in the stream and keep track of it.
+The files are written to via  [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader?view=net-5.0) & [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader?view=net-5.0). These two classes allow you to access the underlying stream they are using. Therefore, we can access the Position we are at in the stream. The way this works is, on write we add the size, in bytes, to our class' private variable 'Position'. This way we can access the very end position in the stream and keep track of it.
 
 The way we link the data's name with the data is by storing the current Position along side it inside of a dictionary. This data is discovered before we increment SStorage's private member Position, the end position before we add the data will be the data's start position. We can then use that data to link the two and make the data accessible with one of the Read functions. 
 
