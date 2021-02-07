@@ -293,7 +293,7 @@ namespace Storage
             void Load(string path);
         }
 
-        class HelperFactory
+        public class HelperFactory
         {
             public static IStorage SStorageWithPath(string path) => new Storage(path);
 
