@@ -342,7 +342,7 @@ namespace Storage
     /// <summary>
     /// Main SStorage object.
     /// </summary>
-    class Storage : IDisposable, Utils.IStorage
+    public class Storage : IDisposable, Utils.IStorage
     {
         public string FileName { get; set; }
 
