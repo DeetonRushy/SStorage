@@ -53,6 +53,8 @@ We can then save the dictionary into Json format using [Newtonsoft.Json](https:/
 
 ## Full Usage
 
+:zzz:
+#### synchronous
 ```cs
 // Fully initialized object, no need for constructors etc.
 // You can currently access every constructor with the HelperFactory.
@@ -72,9 +74,34 @@ var b = storage.ReadByte("MyByte");
 storage.Save("saved.json");
 
 // That can now be re-read by any other instance of storage.
-Storage new_storage = new Storage("storage.dat", true);
-new_storage.Load("saved.json");
+IStorage storage_two = HelperFactory.SStorageWithPathDbg("storage.dat");
+storage_two.Load("saved.json");
 ```
+:stopwatch:
+#### asynchronous
+```cs
+// Fully initialized object, no need for constructors etc.
+// You can currently access every constructor with the HelperFactory.
+
+IStorage storage = HelperFactory.SStorageWithPathDbg("storage.dat");
+
+// All native C# types are supported with Write
+storage.WriteAsync("MyInt", (int)1);
+storage.WriteAsync("MyByte", (byte)1);
+
+// Likewise, all native C# types are support to read.
+
+var a = storage.ReadIntAsync("MyInt");
+var b = storage.ReadByteAsync("MyByte");
+
+// You can save your data.
+storage.SaveAsync("saved.json");
+
+// That can now be re-read by any other instance of storage.
+IStorage storage_two = HelperFactory.SStorageWithPathDbg("storage.dat");
+storage_two.LoadAsync("saved.json");
+```
+
 
 ## Upcoming features
 
