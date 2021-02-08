@@ -80,4 +80,5 @@ new_storage.Load("saved.json");
 
 - [x] Encoding: SStorage will soon support storing the data with a specific encoding.
 - [x] Interfaces: SStorage now uses a factory to pass back IStorage types. This makes using this library have much less burden on your code.
-- [ ] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
+- [x] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
+- [x] Async: SStorage support asynchronous execution.
