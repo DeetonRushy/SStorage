@@ -6,7 +6,7 @@ This is a simple `C#` library that allows you save data in a binary format.
 
 *Write*: You can write any data type to disk at runtime with any name you want.
 ```cs
-Storage storage = new Storage();
+IStorage storage = HelperFactory.SStorage();
 
 storage.Write("Title", "MyAwesomeApp");
 storage.Write("Height", 800);
@@ -17,7 +17,7 @@ storage.Write("Height", 800);
 
 *Read*: You can read any data type from the name you assigned it when writing it.
 ```cs
-Storage storage = new Storage();
+IStorage storage = HelperFactory.SStorage();
 
 storage.Write("Username", "DeetonRushy");
 
@@ -53,6 +53,8 @@ We can then save the dictionary into Json format using [Newtonsoft.Json](https:/
 
 ## Full Usage
 
+:zzz:
+#### synchronous
 ```cs
 // Fully initialized object, no need for constructors etc.
 // You can currently access every constructor with the HelperFactory.
@@ -72,12 +74,38 @@ var b = storage.ReadByte("MyByte");
 storage.Save("saved.json");
 
 // That can now be re-read by any other instance of storage.
-Storage new_storage = new Storage("storage.dat", true);
-new_storage.Load("saved.json");
+IStorage storage_two = HelperFactory.SStorageWithPathDbg("storage.dat");
+storage_two.Load("saved.json");
 ```
+:stopwatch:
+#### asynchronous
+```cs
+// Fully initialized object, no need for constructors etc.
+// You can currently access every constructor with the HelperFactory.
+
+IStorage storage = HelperFactory.SStorageWithPathDbg("storage.dat");
+
+// All native C# types are supported with Write
+storage.WriteAsync("MyInt", (int)1);
+storage.WriteAsync("MyByte", (byte)1);
+
+// Likewise, all native C# types are support to read.
+
+var a = storage.ReadIntAsync("MyInt");
+var b = storage.ReadByteAsync("MyByte");
+
+// You can save your data.
+storage.SaveAsync("saved.json");
+
+// That can now be re-read by any other instance of storage.
+IStorage storage_two = HelperFactory.SStorageWithPathDbg("storage.dat");
+storage_two.LoadAsync("saved.json");
+```
+
 
 ## Upcoming features
 
 - [x] Encoding: SStorage will soon support storing the data with a specific encoding.
 - [x] Interfaces: SStorage now uses a factory to pass back IStorage types. This makes using this library have much less burden on your code.
-- [ ] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
+- [x] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
+- [x] Async: SStorage support asynchronous execution.
