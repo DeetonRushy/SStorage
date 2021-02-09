@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SStorage", "SStorage\SStorage.csproj", "{3526C891-C685-4806-9360-F9E8020A1988}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_SStorage", "_SStorage\_SStorage.csproj", "{1DAD8959-5CB3-4EAB-8FBA-B07AB9880306}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3526C891-C685-4806-9360-F9E8020A1988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3526C891-C685-4806-9360-F9E8020A1988}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3526C891-C685-4806-9360-F9E8020A1988}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3526C891-C685-4806-9360-F9E8020A1988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DAD8959-5CB3-4EAB-8FBA-B07AB9880306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DAD8959-5CB3-4EAB-8FBA-B07AB9880306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DAD8959-5CB3-4EAB-8FBA-B07AB9880306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DAD8959-5CB3-4EAB-8FBA-B07AB9880306}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6D7323AD-37AC-411E-9A4E-7FDA8D69823E}
+		SolutionGuid = {D0740BD1-CCDA-4CC4-9F91-1879B8576865}
 	EndGlobalSection
 EndGlobal
