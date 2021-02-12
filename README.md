@@ -109,3 +109,4 @@ storage_two.LoadAsync("saved.json");
 - [x] Interfaces: SStorage now uses a factory to pass back IStorage types. This makes using this library have much less burden on your code.
 - [x] Speed: Saving, writing and loading need to be optimized further to reach better speeds.
 - [x] Async: SStorage support asynchronous execution.
+- [ ] Editable Values: Add support for constant values, values that can be over-written etc. 
