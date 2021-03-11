@@ -2158,7 +2158,7 @@ namespace SStorage
             var data = File.ReadAllText(path);
 
             PositionTable = JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
-            UpdateIndex(); // Not an async version, when called here it's crucial the member is set.
+            UpdateIndex(); // Not an async version, when called here it's crucial the member is set before doing anything else.
         }
 
         #endregion
