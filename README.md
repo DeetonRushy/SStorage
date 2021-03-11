@@ -35,10 +35,25 @@ private void OnExit()
 
 }
 
+// alternative
+
+AppDomain.CurrentDomain.ProcessExit += new EventHandler (OnProcessExit);
+
+private void OnProcessExit()
+{
+    Globals.storage.Save("save-file.json");
+}
+
 private void OnLoad()
 {
     // This global instance of SStorage will now have all previous data loaded & ready.
-    Globals.storage.Load("save-file.json");
+    
+    if ( System.IO.File.Exists("save-file.json") )
+    {
+        Globals.storage.Load("save-file.json");
+    }
+    
+    // ...
 
 }
 ```
